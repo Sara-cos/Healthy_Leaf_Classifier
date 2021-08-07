@@ -1,6 +1,6 @@
 import streamlit as st
 from PIL import Image
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import tensorflow_hub as hub
 import tensorflow as tf
 import numpy as np
@@ -11,18 +11,16 @@ import time
 
 
 
-## this is part of frontend 
+## this is part of web app
 
 ## ----------------------------------------------- x -----------------------------------------x-------------------------x------------------##
 
 
-
-fig = plt.figure()
+# fig = plt.figure()
 
 st.title('Green stem Classifier')
 
 st.markdown("Prediction : (healthy  or  diseased)")
-
 
 def main():
     file_uploaded = st.file_uploader("Choose File", type=["png","jpg","jpeg"])
@@ -36,8 +34,8 @@ def main():
             st.write("Invalid command, please upload an image")
         else:
             with st.spinner('Model working....'):
-                plt.imshow(image)
-                plt.axis("off")
+                # plt.imshow(image)
+                # plt.axis("off")
 
                 predictions = predict(image)
 
@@ -67,19 +65,14 @@ def main():
 
     
 #     result = f"{class_names[np.argmax(scores)]} with a { (100 * np.max(scores)).round(2) } % confidence." 
-#     # result = f"{class_names} : {scores}   "
 #     return result
 
 
 ## -----------------------------------------------------x---------------------------------------x--------------------------------------------##
 
 
-# @st.cache
-
 ## this code for format tflite file
 def predict(image):
-    ## image attribute is the image uploaded
-    ## this because my file was in model folder, this is file path
     model = "leaves_model.tflite" 
 
 
@@ -89,9 +82,7 @@ def predict(image):
     output_details = interpreter.get_output_details()
     
     input_shape = input_details[0]['shape']
-    ## resize value varies with the values used while training
     image = np.array(image.resize((200,200)), dtype=np.float32) 
-    
     
     image = image / 255.0
     image = np.expand_dims(image, axis=0)
@@ -101,7 +92,6 @@ def predict(image):
     output_data = interpreter.get_tensor(output_details[0]['index'])
     probabilities = np.array(output_data[0])
 
-    ## This will change in accordance with the classification classes, the numbering in accordance with the trained sequence and label
     labels = {0 : "healthy", 1 : "diseased"} 
 
     label_to_probabilities = []
@@ -112,10 +102,9 @@ def predict(image):
     sorted(label_to_probabilities, key=lambda element: element[1])
 
     result = { 'healthy' : 0 , 'diseased' : 0 }
-    ## this is printing format argmax() brings out the index of max value because the result is kind of in form of matrix
+    
     result = f"{label_to_probabilities[np.argmax(probability)][0]} with a { (100 * np.max(probabilities)).round(2)} % confidence." 
     
-    ## this returns the value which gets directly printed, so this is to be printed
     return result
 
 
